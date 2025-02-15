@@ -127,9 +127,10 @@ class Map_editor:
 
     def nexy_map(self, map_name):
         self.map = []
-        with open("maps/" + map_name) as map_file:
+        with open("data/maps/" + map_name) as map_file:
             for line in map_file:
                 self.map.append(list(map(int, line.split())))
+
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -167,7 +168,7 @@ class Character(pygame.sprite.Sprite):
         self.x, self.y = position
 
     def render(self, screen):
-        self.hp = 10000
+        self.hp = 100
         self.armor = 20
         self.damage = 15
         for i in range(len(self.eqwipment)):
@@ -228,7 +229,7 @@ class Character(pygame.sprite.Sprite):
                 self.left_hand = False
 
     def remove_item(self, item):
-        del self.invtntory[self.invtntory.index(item)]
+        del self.eqwipment[item]
 
     def aneqwip_item(self, item):
         if item.get_state()[0] == "head":
@@ -325,6 +326,7 @@ class Game:
             self.new_data = old_data.replace(old_data.split("\n")[2], "map3")
             with open("data/saves/user.txt", "w") as f:
                 f.write(self.new_data)
+            mapor.nexy_map("map3")
         if self.mapp.map[next_x][next_y] == 7:
             running = True
             clock = pygame.time.Clock()
@@ -333,27 +335,25 @@ class Game:
             image = pygame.image.load("data/sprites/character_v.png")
             screen.blit(image, (350, 470))
             f1 = pygame.font.Font(None, 70)
-            hp_bur = f1.render("Вы выбролись из подземелия, по крайней мере вы так думаете....", 1, (0, 0, 0))
+            hp_bur = f1.render("Вы выбролись из подземелия,", 1, (0, 0, 0))
             screen.blit(hp_bur, (600, 670))
+            f1 = pygame.font.Font(None, 70)
+            hp_bur = f1.render("по крайней мере вы так думаете....", 1, (0, 0, 0))
+            screen.blit(hp_bur, (600, 740))
             file_path = "data/saves/user.txt"
+            pygame.display.flip()
             while running:
                 for event in pygame.event.get():
                     if event.type == pygame.KEYDOWN:
                         if event.key == pygame.K_SPACE:
-                            if os.path.exists(file_path):
+                            with open("data/saves/user.txt", "w") as f:
+                                f.write("1" + '\n')
+                                f.write("1" + '\n')
+                                f.write("map0" + '\n')
+                                f.write("None" + '\n')
+                                f.write("None" + '\n')
                                 running = False
-                            else:
-                                with open("data/saves/user.txt", "w") as f:
-                                    f.write("1" + '\n')
-                                    f.write("1" + '\n')
-                                    f.write("map0" + '\n')
-                                    f.write("None" + '\n')
-                                    f.write("None" + '\n')
-                                running = False
-                pygame.display.flip()
-                clock.tick(FPS)
-                charik.set_position((1, 1))
-                mapor.nexy_map("map0")
+            pygame.quit()
         if self.mapp.map[next_x][next_y] == 8:
             bos = Battle(charik, demon)
             self.mapp.map[next_x][next_y] = '0'
@@ -499,7 +499,8 @@ class Battle:
             clock.tick(FPS)
 
 
-sword = Item("right_hand", 0, 30, 0, "data/sprites/sword.png", "Меч", '"ИЗВИНИСЬ ПЕРЕД РЫЦЫРЕМ!"', "data/sprites/sword_v.png")
+sword = Item("right_hand", 0, 30, 0, "data/sprites/sword.png", "Меч", '"ИЗВИНИСЬ ПЕРЕД РЫЦЫРЕМ!"',
+             "data/sprites/sword_v.png")
 shield = Item("left_hand", 0, 10, 20, "data/sprites/shield.png", "Щит", '"Оуууу шит!"', "data/sprites/shield_v.png")
 foil_hat = Item("head", 00, 0, 20, "data/sprites/foil_hat.png", "Шапочка из фольги", '"100% защита от инопланетян"',
                 "data/sprites/foil_hat_v.png")
@@ -515,16 +516,31 @@ klacic_fingershooter = Item("left_hand", 0, 45, 0, "data/sprites/klacic_fingersh
                             '"Пау, Пау!"', "data/sprites/klacic_fingershooter_v.png")
 t_shirt_guchi = Item("bady", 5, 0, 5, "data/sprites/T-shirt_guchi.png", "Майка Гучи",
                      '"какая то бедность дотронулась до меня"', "data/sprites/T-shirt_guchi_v.png")
+rkn = Item("head", 0, 0, 0, "data/sprites/rkn.png", "РКН",
+           '"Запрещаю вам использовать голову"', "data/sprites/rkn_v.png")
+cup = Item("right_hand", 0, 99, 0, "data/sprites/cup.png", "Пласмасовый стаканчик",
+           '"Смертоносное оружие"', "data/sprites/cup_v.png")
+banana = Item("left_hand", 0, 100, 0, "data/sprites/banana.png", "Идеальный бананс",
+              '"Эталон гармонии"', "data/sprites/banana_v.png")
+thorn_crown = Item("head", -10, 00, 70, "data/sprites/thorn_crown.png", "Терновая корона",
+                   '"И хочеться и колиться"', "data/sprites/thorn_crown_v.png")
+gold = Item("bady", 10, 00, 150, "data/sprites/gold.png", "20ти килограмовый крест",
+            '"Из чистого золота!"', "data/sprites/gold_v.png")
+an_cenon = Item("right_hand", 0, 250, 0, "data/sprites/an_cenon.png", "АНИГИЛЯТОРНАЯ ПУШКАА",
+            '"Я шипну тебе на ушко.."', "data/sprites/an_cenon_v.png")
+
 ITEMS = [sword, shield, foil_hat, bulletproof_diaper, electric_broom, chain_mail, festive_cap, klacic_fingershooter,
-         t_shirt_guchi]
+         t_shirt_guchi, rkn, cup, banana, thorn_crown, gold, an_cenon]
 ITEMS_SWOP_TO = {sword: "sword", shield: "shield", foil_hat: "foil_hat", bulletproof_diaper: "bulletproof_diaper",
                  electric_broom: "electric_broom", chain_mail: "chain_mail", festive_cap: "festive_cap",
-                 klacic_fingershooter: "klacic_fingershooter", t_shirt_guchi: "t_shirt_guchi"}
+                 klacic_fingershooter: "klacic_fingershooter", t_shirt_guchi: "t_shirt_guchi", rkn: "rkn", cup: "cup",
+                 banana: "banana", thorn_crown: "thorn_crown", gold: "gold", an_cenon: "an_cenon"}
 ITEMS_SWOP_OUT = {"sword": sword, "shield": shield, "foil_hat": foil_hat, "bulletproof_diaper": bulletproof_diaper,
                   "electric_broom": electric_broom, "chain_mail": chain_mail, "festive_cap": festive_cap,
-                  "klacic_fingershooter": klacic_fingershooter, "t_shirt_guchi": t_shirt_guchi}
+                  "klacic_fingershooter": klacic_fingershooter, "t_shirt_guchi": t_shirt_guchi, "rkn": rkn, "cup": cup,
+                  "banana": banana, "thorn_crown": thorn_crown, "gold": gold, "an_cenon": an_cenon}
 bear = Mobs(200, 40, 10, "data/sprites/bear.png", "Медведь")
-demon = Mobs(450, 70, 80, "data/sprites/demon_v.png", "Чорт")
+demon = Mobs(666, 66, 6, "data/sprites/demon_v.png", "Чорт")
 goblin = Mobs(50, 20, 5, "data/sprites/goblin.png", "Гоблин")
 turt = Mobs(70, 25, 100, "data/sprites/turt.png", "Черепаха")
 bug = Mobs(77, 77, 77, "data/sprites/bug.png", "Баг")
@@ -601,6 +617,46 @@ if __name__ == '__main__':
                 if event.key == pygame.K_7:
                     if len(charik.invtntory) >= 7:
                         charik.eqwip_item(charik.invtntory[6])
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_h:
+                    if not charik.head:
+                        for i in range(len(charik.eqwipment)):
+                            if charik.eqwipment[i].pos == "head":
+                                charik.remove_item(i)
+                                charik.head = True
+                                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    if not charik.right_hand:
+                        for i in range(len(charik.eqwipment)):
+                            if charik.eqwipment[i].pos == "right_hand":
+                                charik.remove_item(i)
+                                charik.right_hand = True
+                                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_l:
+                    if not charik.left_hand:
+                        for i in range(len(charik.eqwipment)):
+                            if charik.eqwipment[i].pos == "left_hand":
+                                charik.remove_item(i)
+                                charik.left_hand = True
+                                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_t:
+                    if not charik.legs:
+                        for i in range(len(charik.eqwipment)):
+                            if charik.eqwipment[i].pos == "legs":
+                                charik.remove_item(i)
+                                charik.legs = True
+                                break
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_b:
+                    if not charik.bady:
+                        for i in range(len(charik.eqwipment)):
+                            if charik.eqwipment[i].pos == "bady":
+                                charik.remove_item(i)
+                                charik.bady = True
+                                break
 
         game.update_character()
         screen.fill((0, 0, 0))
